@@ -37,6 +37,43 @@ const PostService = {
       )
       .groupBy('post.id', 'usr.id')
   },
+  getPostsByLocation(db, location){
+    return db
+    .from('bandbridge_posts AS post')
+    .select(
+      'post.id',
+      'post.post_type',
+      'post.location',
+      'post.style',
+      'post.commitment',
+      'post.skill_lvl',
+      'post.instruments_need',
+      'post.description',
+      'post.date_created',
+      db.raw(
+        `count(DISTINCT comm) AS number_of_comments`
+        ),
+      db.raw(
+        `json_build_object(
+            'id', usr.id,
+            'user_name', usr.user_name,
+            'date_created', usr.date_created
+        ) AS "author"`
+      ),
+    )
+    .where('post.location', location)
+    .leftJoin(
+      'bandbridge_comments AS comm',
+      'post.id',
+      'comm.post_id',
+    )
+    .leftJoin(
+      'bandbridge_users AS usr',
+      'post.user_id',
+      'usr.id',
+    )
+    .groupBy('post.id', 'usr.id')
+  },
   serializePost(post) {
     const { author } = post;
     return {

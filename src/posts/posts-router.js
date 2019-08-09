@@ -8,12 +8,23 @@ const { requireAuth } = require('../middleware/jwt-auth');
 
 postRouter
   .get('/', (req, res, next) => {
+    if(req.query.location){
+      console.log(req.query.location)
+      PostService.getPostsByLocation(req.app.get('db'),req.query.location)
+        .then(posts => {
+          res.json(posts.map(PostService.serializePost))
+        })
+        .catch(next);
+    }
+    else {
     PostService.getAllPosts(req.app.get('db'))
       .then(posts => {
         res.json(posts.map(PostService.serializePost));
       })
       .catch(next);
+    }
   });
+  
 
 postRouter
   .post('/', requireAuth, jsonBodyParser, (req, res, next) => {
