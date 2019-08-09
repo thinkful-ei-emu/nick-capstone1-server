@@ -26,6 +26,7 @@ authRouter
             const sub = loginUser.user_name;
             const payload = { user_id: user.id };
             res.send({
+              user_name: user.user_name,
               authToken: AuthService.createJWT(sub, payload),
             });
           });

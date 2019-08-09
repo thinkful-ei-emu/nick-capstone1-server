@@ -57,6 +57,111 @@ const PostService = {
       }
     }
   },
+  serializePostComment(comment){
+    const { user } = comment;
+    return {
+      id: comment.id,
+      post_id: comment.post_id,
+      text: xss(comment.text),
+      date_created: new Date(comment.date_created),
+      user: {
+        id: user.id,
+        user_name: user.user_name,
+        instrument: user.instrument,
+        location: user.location,
+        date_created: new Date(user.date_created),
+        styles: user.styles,
+        commitment: user.commitment
+      }
+    }
+  },
+  getPostById(db, id){
+    return PostService.getAllPosts(db)
+      .where('post.id', id)
+      .first()
+      
+  },
+  getCommentsForPost(db, postId){
+    return db
+    .from('bandbridge_comments AS comm')
+    .select('comm.id',
+            'comm.date_created',
+            'comm.text',
+            db.raw(
+              `json_strip_nulls(
+                row_to_json(
+                  (SELECT tmp FROM (
+                    SELECT
+                      usr.id,
+                      usr.user_name,
+                      usr.instrument,
+                      usr.location,
+                      usr.date_created,
+                      usr.styles,
+                      usr.commitment
+                  ) tmp)
+                )
+              ) AS "user"`
+            )
+          )
+          .where('comm.post_id', postId)
+          .leftJoin('bandbridge_users AS usr',
+                    'comm.user_id',
+                    'usr.id',
+            )
+            .groupBy('comm.id', 'usr.id')
+  },
+  insertPost(db, post){
+    return db
+      .insert(post)
+      .into('bandbridge_posts')
+      .returning('*')
+      .then(([post]) => post)
+      .then(post => 
+        PostService.getPostById(db, post.id)
+        )
+  },
+  insertComment(db, comment){
+    return db
+      .insert(comment)
+      .into('bandbridge_comments')
+      .returning('*')
+      .then(([comment]) => comment)
+      .then(comment => PostService.getCommentById(db, comment.id))
+
+
+  },
+  getCommentById(db, commentId){
+    return db
+    .from('bandbridge_comments AS comm')
+    .select('comm.id',
+            'comm.date_created',
+            'comm.text',
+            'comm.post_id',
+            db.raw(
+              `json_strip_nulls(
+                row_to_json(
+                  (SELECT tmp FROM (
+                    SELECT
+                      usr.id,
+                      usr.user_name,
+                      usr.instrument,
+                      usr.location,
+                      usr.date_created,
+                      usr.styles,
+                      usr.commitment
+                  ) tmp)
+                )
+              ) AS "user"`
+            )
+          )
+          .leftJoin('bandbridge_users AS usr',
+                    'comm.user_id',
+                    'usr.id',
+         )
+          .where('comm.id', commentId)
+          .first()
+  },
 
 }
 
