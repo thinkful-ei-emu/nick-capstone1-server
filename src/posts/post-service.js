@@ -37,6 +37,51 @@ const PostService = {
       )
       .groupBy('post.id', 'usr.id')
   },
+  getFilteredPosts(db, ...args){
+   let query = db
+    .from('bandbridge_posts AS post')
+    .select(
+      'post.id',
+      'post.post_type',
+      'post.location',
+      'post.style',
+      'post.commitment',
+      'post.skill_lvl',
+      'post.instruments_need',
+      'post.description',
+      'post.date_created',
+      db.raw(
+        `count(DISTINCT comm) AS number_of_comments`
+        ),
+      db.raw(
+        `json_build_object(
+            'id', usr.id,
+            'user_name', usr.user_name,
+            'date_created', usr.date_created
+        ) AS "author"`
+      ),
+    )
+    if(args[0]){
+      query.where('post.location', args[0])
+    }
+    if(args[1]){
+      query.where('post.instruments_need', 'like', `%${args[1]}%`)
+    }
+    query.leftJoin(
+      'bandbridge_comments AS comm',
+      'post.id',
+      'comm.post_id',
+    )
+    .leftJoin(
+      'bandbridge_users AS usr',
+      'post.user_id',
+      'usr.id',
+    )
+    .groupBy('post.id', 'usr.id')
+
+    return query;
+
+  },
   getPostsByLocation(db, location){
     return db
     .from('bandbridge_posts AS post')
@@ -62,6 +107,43 @@ const PostService = {
       ),
     )
     .where('post.location', location)
+    .leftJoin(
+      'bandbridge_comments AS comm',
+      'post.id',
+      'comm.post_id',
+    )
+    .leftJoin(
+      'bandbridge_users AS usr',
+      'post.user_id',
+      'usr.id',
+    )
+    .groupBy('post.id', 'usr.id')
+  },
+  getPostsByInstrument(db, instrument){
+    return db
+    .from('bandbridge_posts AS post')
+    .select(
+      'post.id',
+      'post.post_type',
+      'post.location',
+      'post.style',
+      'post.commitment',
+      'post.skill_lvl',
+      'post.instruments_need',
+      'post.description',
+      'post.date_created',
+      db.raw(
+        `count(DISTINCT comm) AS number_of_comments`
+        ),
+      db.raw(
+        `json_build_object(
+            'id', usr.id,
+            'user_name', usr.user_name,
+            'date_created', usr.date_created
+        ) AS "author"`
+      ),
+    )
+    .where('post.instruments_need', 'like', `%${instrument}%`)
     .leftJoin(
       'bandbridge_comments AS comm',
       'post.id',

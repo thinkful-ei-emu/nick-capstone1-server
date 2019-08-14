@@ -6,24 +6,16 @@ const jsonBodyParser = express.json();
 const postRouter = express.Router();
 const { requireAuth } = require('../middleware/jwt-auth');
 
+
 postRouter
-  .get('/', (req, res, next) => {
-    if(req.query.location){
-      console.log(req.query.location)
-      PostService.getPostsByLocation(req.app.get('db'),req.query.location)
-        .then(posts => {
-          res.json(posts.map(PostService.serializePost))
-        })
-        .catch(next);
-    }
-    else {
-    PostService.getAllPosts(req.app.get('db'))
-      .then(posts => {
-        res.json(posts.map(PostService.serializePost));
-      })
-      .catch(next);
-    }
-  });
+.get('/', (req, res, next) => {
+  const {location, instrument} = req.query;
+  PostService.getFilteredPosts(req.app.get('db'), location, instrument)
+    .then(posts => {
+      res.json(posts.map(PostService.serializePost))
+    })
+    .catch(next);
+})
   
 
 postRouter
@@ -40,7 +32,7 @@ postRouter
     };
     for (const [key, value] of Object.entries(newPost))
       if(value == null)
-        return res,status(400).json({error: `Missing ${key} in request body`});
+        return res.status(400).json({error: `Missing ${key} in request body`});
 
     newPost.user_id = req.user.id;
 
