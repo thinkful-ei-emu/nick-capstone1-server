@@ -17,13 +17,13 @@ POST '/auth/login' unprotected endpoint. Requires user_name and password. Succes
 ------------------------------------------------------------------------------------
 
 Technology used:
-node
-express
-postgres
-knex
-morgan
-helmet
-cors
-bcrypt
-jsonwebtoken
+* node
+* express
+* postgres
+* knex
+* morgan
+* helmet
+* cors
+* bcrypt
+* jsonwebtoken
 
