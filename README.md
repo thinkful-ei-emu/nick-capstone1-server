@@ -1,4 +1,4 @@
-Title: BandBridge server
+BandBridge server
 ========================
 
 Endpoint Documentation:
