@@ -77,7 +77,8 @@ const PostService = {
       'post.user_id',
       'usr.id',
     )
-    .groupBy('post.id', 'usr.id')
+    .groupBy('post.id', 'usr.id', 'post.date_created')
+    .orderBy('post.date_created', 'DESC')
 
     return query;
 
@@ -168,7 +169,7 @@ const PostService = {
       instruments_need: post.instruments_need,
       description: xss(post.description),
       date_created: new Date(post.date_created),
-      number_of_comments: Number(post.number_of_comments) || 0,
+      number_of_comments: Number(post.number_of_comments) || 0, 
       author: {
         id: author.id,
         user_name: author.user_name,
