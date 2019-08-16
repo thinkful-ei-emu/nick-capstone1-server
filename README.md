@@ -1,26 +1,29 @@
-# Express Boilerplate!
+Title: BandBridge server
 
-This is a boilerplate project used for starting new projects!
+Endpoint Documentation:
 
-## Set up
+GET '/posts' unprotected endpoint. Returns an array of post objects that can be filtered using query params location and instrument.
 
-Complete the following steps to start a new project (NEW-PROJECT-NAME):
+POST '/posts' protected endpoint. Requires jwt to post new items. Requires post_type, location, style, commitment, skill_lvl, instruments_need, description.
 
-1. Clone this repository to your local machine `git clone BOILERPLATE-URL NEW-PROJECTS-NAME`
-2. `cd` into the cloned repository
-3. Make a fresh start of the git history for this project with `rm -rf .git && git init`
-4. Install the node dependencies `npm install`
-5. Move the example Environment file to `.env` that will be ignored by git and read by the express server `mv example.env .env`
-6. Edit the contents of the `package.json` to use NEW-PROJECT-NAME instead of `"name": "express-boilerplate",`
+GET '/posts/:postId' protected endpoint. Requires jwt to see individual post page and read comments on the post.
 
-## Scripts
+POST '/posts/:postId/comments' protected endpoint. Requires jwt to post comments.
 
-Start the application `npm start`
+POST '/users' unprotected endpoint. Requires user_name, password, location, instrument, styles and commmitment. Creates an account that you may log into to see protected endpoints from client.
 
-Start nodemon for the application `npm run dev`
+POST '/auth/login' unprotected endpoint. Requires user_name and password. Successful post will store a jwt in local storage and enable you to see protected endpoints.
 
-Run the tests `npm test`
+------------------------------------------------------------------------------------
 
-## Deploying
+Technology used:
+node
+express
+postgres
+knex
+morgan
+helmet
+cors
+bcrypt
+jsonwebtoken
 
-When your new project is ready for deployment, add a new Heroku application with `heroku create`. This will make a new git remote called "heroku" and you can then `npm run deploy` which will push to this remote's master branch.
