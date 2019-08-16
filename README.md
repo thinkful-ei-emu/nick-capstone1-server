@@ -1,4 +1,4 @@
-Title: BandBridge server
+BandBridge server
 ========================
 
 To deploy - git push heroku master
