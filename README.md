@@ -1,6 +1,8 @@
 Title: BandBridge server
 ========================
 
+To deploy - git push heroku master
+
 Endpoint Documentation:
 
 GET '/posts' unprotected endpoint. Returns an array of post objects that can be filtered using query params location and instrument.
