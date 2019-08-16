@@ -8,6 +8,7 @@ const postRouter = require('./posts/posts-router');
 const userRouter = require('./user/user-router');
 const authRouter = require('./auth/auth-router');
 
+
 const app = express();
 
 const morganOption = (NODE_ENV === 'production') ? 'tiny' : 'common';
